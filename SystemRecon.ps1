@@ -7,4 +7,3 @@ Get-Process | Out-File -Append C:\SystemInfo.txt
 Get-Service | Out-File -Append C:\SystemInfo.txt
 Get-hotFix | Out-File -Append C:\SystemInfo.txt
 Get-WmiObject -class win32_Product | Out-File -Append C:\SystemInfo.txt
-
