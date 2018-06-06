@@ -27,3 +27,6 @@ Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-Fi
 Write-Output "*************************************************************" | Out-File -Append C:\SystemInfo.txt
 Write-Output "NTP Settings" | Out-File -Append C:\SystemInfo.txt
 Get-ItemProperty -path Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters
+Write-Output "*************************************************************" | Out-File -Append C:\SystemInfo.txt
+Write-Output "Run Key" | Out-File -Append C:\SystemInfo.txt
+Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
