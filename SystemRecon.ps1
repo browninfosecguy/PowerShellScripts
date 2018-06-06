@@ -19,7 +19,7 @@ Write-Output "List of Services on the System (Running and Stopped)" | Out-File -
 Get-Service | Select-Object DisplayName,Status | Sort-Object Status -Descending | Out-File -Append C:\SystemInfo.txt
 Write-Output "*************************************************************" | Out-File -Append C:\SystemInfo.txt
 Write-Output "List of Paatches Applied to the Server" | Out-File -Append C:\SystemInfo.txt
-Get-hotFix | Out-File -Append C:\SystemInfo.txt
+Get-hotFix | Sort-Object InstalledOn| Out-File -Append C:\SystemInfo.txt
 Write-Output "*************************************************************" | Out-File -Append C:\SystemInfo.txt
 Write-Output "List of Installed Software" | Out-File -Append C:\SystemInfo.txt
 #Get-WmiObject -class win32_Product | Out-File -Append C:\SystemInfo.txt
