@@ -24,3 +24,6 @@ Write-Output "*************************************************************" | O
 Write-Output "List of Installed Software" | Out-File -Append C:\SystemInfo.txt
 #Get-WmiObject -class win32_Product | Out-File -Append C:\SystemInfo.txt
 Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-File -Append C:\SystemInfo.txt
+Write-Output "*************************************************************" | Out-File -Append C:\SystemInfo.txt
+Write-Output "NTP Settings" | Out-File -Append C:\SystemInfo.txt
+Get-ItemProperty -path Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters
