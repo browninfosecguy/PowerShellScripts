@@ -74,6 +74,6 @@ if ($return -eq 200)
 }
 else
 {
-    Write-Output "The host failed to reach Googel.ca" | Out-File -Append C:\$computerName`_SystemInfo.txt
+    Write-Output "The host failed to reach Google.ca" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
 format
