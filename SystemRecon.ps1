@@ -70,10 +70,10 @@ $return = testInternet
 
 if ($return -eq 200)
 {
-    Write-Host "The host was able to ping Google.ca Successfully"
+    Write-Output "The host was able to ping Google.ca Successfully" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
 else
 {
-    Write-host "The host failed to ping Googel.ca"
+    Write-Output "The host failed to ping Googel.ca" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
 format
