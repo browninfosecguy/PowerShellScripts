@@ -2,6 +2,21 @@
         Write-Output "*************************************************************" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
 
+function testInternet{
+Param(
+[int]$code = 0
+)
+
+    try{
+        #Invoke-WebRequest "https://google.ca" | Select-Object Statuscode
+        $code=(Invoke-WebRequest "https://google.ca" -timeoutsec 30).statuscode
+        Write-Output $code
+        }
+    catch{
+        Write-Output $code
+        }
+}
+
 $computerName = (Get-WmiObject -class Win32_computerSystem).Name.ToString()
 
 Write-Output "*************************************************************" | Out-File C:\$computerName`_SystemInfo.txt
@@ -46,3 +61,17 @@ format
 Write-Output "Run Key" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | Out-File -Append C:\$computerName`_SystemInfo.txt
+format
+Write-Output "Testing for External Internet Connectivity" | Out-File -Append C:\$computerName`_SystemInfo.txt
+format
+$return = testInternet
+
+if ($return -eq 200)
+{
+    Write-Host "The host was able to ping Google.ca Successfully"
+}
+else
+{
+    Write-host "The host failed to ping Googel.ca"
+}
+format
