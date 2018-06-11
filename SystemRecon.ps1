@@ -41,7 +41,7 @@ Get-ComputerInfo | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "Processes Running on the System" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Get-Process | Select-Object Name,Path,ProductVersion,Description | Format-List| Out-File -Append C:\$computerName`_SystemInfo.txt
+Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | Format-List| Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "List of Services on the System (Running and Stopped)" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
