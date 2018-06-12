@@ -19,6 +19,16 @@ Param(
         }
 }
 
+function checkProcessVendor{
+
+        $recognizedVendor = "Microsoft Corporation","Google Inc.","Oracle Corporation"
+
+        $company = Get-Process | Select-Object Name, Company, Path
+
+        $company | ForEach-Object{if(!$recognizedVendor.contains($_.Company)){Write-output  $_.Name,$_.path}}
+
+}
+
 $computerName = (Get-WmiObject -class Win32_computerSystem).Name.ToString()
 
 Write-Output "*************************************************************" | Out-File C:\$computerName`_SystemInfo.txt
@@ -76,4 +86,7 @@ else
 {
     Write-Output "The host failed to reach Google.ca" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
+format
+Write-Output "Checking Unknown Processes Running on the Sytem" | Out-File -Append C:\$computerName`_SystemInfo.txt
+checkProcessVendor | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
