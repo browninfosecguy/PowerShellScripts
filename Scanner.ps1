@@ -1,0 +1,1 @@
+﻿0..65535 | foreach-object{Test-NetConnection localhost -Port $_}|ForEach-Object{if($_.TcpTestSucceeded){write-host "Holy Shit"}}
