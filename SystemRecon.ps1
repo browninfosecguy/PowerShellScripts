@@ -87,6 +87,10 @@ else
     Write-Output "The host failed to reach Google.ca" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
 format
+Write-Output "Checking Open Ports on the System"|Out-File -Append C:\$computerName`_SystemInfo.txt
+format
+Get-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,State | Sort-Object LocalPort -Descending | Out-File -Append C:\$computerName`_SystemInfo.txt
+format
 Write-Output "Checking Unknown Processes Running on the Sytem" | Out-File -Append C:\$computerName`_SystemInfo.txt
 checkProcessVendor | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
