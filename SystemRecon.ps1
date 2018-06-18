@@ -1,4 +1,4 @@
-﻿get-#Author: @browninfosecguy
+﻿#Author: @browninfosecguy
 
 function format{
         Write-Output "*************************************************************" | Out-File -Append C:\$computerName`_SystemInfo.txt
