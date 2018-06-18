@@ -1,5 +1,14 @@
 ﻿#Author: @browninfosecguy
 
+<#
+
+TODO1: Need lot of cleanup for running processes and installed sodtware onthe system. 
+TODO2: Add more scirpt to fetch starup processes during bootup
+TODO3: Need to add fucntionality to spit output in clean format maybe in HTML files and then zip them to a folder
+TODO4: Need to add Remoting fucntionality to the script to gather data from systems in the network
+
+#>
+
 function format{
         Write-Output "*************************************************************" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
@@ -51,7 +60,7 @@ Get-ComputerInfo | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "Processes Running on the System" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | Format-List| Out-File -Append C:\$computerName`_SystemInfo.txt
+Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | Format-Table| Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "List of Services on the System (Running and Stopped)" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
@@ -66,7 +75,7 @@ format
 #Get-WmiObject -class win32_Product | Out-File -Append C:\$computerName_SystemInfo.txt
 Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|Out-File -Append C:\$computerName`_SystemInfo.txt
 Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |Out-File -Append C:\$computerName`_SystemInfo.txt
-Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-File -Append C:\$computerName`_SystemInfo.txt
+#Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "NTP Settings" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
