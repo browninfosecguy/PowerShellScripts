@@ -1,4 +1,4 @@
-﻿#Author: @browninfosecguy
+﻿get-#Author: @browninfosecguy
 
 function format{
         Write-Output "*************************************************************" | Out-File -Append C:\$computerName`_SystemInfo.txt
@@ -57,13 +57,15 @@ Write-Output "List of Services on the System (Running and Stopped)" | Out-File -
 format
 Get-Service | Select-Object DisplayName,Status | Sort-Object Status -Descending | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Write-Output "List of Paatches Applied to the Server" | Out-File -Append C:\$computerName`_SystemInfo.txt
+Write-Output "List of Patches Applied to the Server" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-hotFix | Sort-Object InstalledOn| Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "List of Installed Software" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 #Get-WmiObject -class win32_Product | Out-File -Append C:\$computerName_SystemInfo.txt
+Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|Out-File -Append C:\$computerName`_SystemInfo.txt
+Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |Out-File -Append C:\$computerName`_SystemInfo.txt
 Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "NTP Settings" | Out-File -Append C:\$computerName`_SystemInfo.txt
