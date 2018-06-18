@@ -4,7 +4,7 @@
 
 TODO1: Need lot of cleanup for running processes and installed sodtware onthe system. 
 TODO2: Add more scirpt to fetch starup processes during bootup
-TODO3: Need to add fucntionality to spit output in clean format maybe in HTML files and then zip them to a folder (Research more on Compress-Archive)
+TODO3: (In Progress) Need to add fucntionality to spit output in clean format maybe in HTML files and then zip them to a folder (Research more on Compress-Archive)
 TODO4: Need to add Remoting fucntionality to the script to gather data from systems in the network
 
 #>
@@ -60,7 +60,7 @@ Get-ComputerInfo | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "Processes Running on the System" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | Format-Table| Out-File -Append C:\$computerName`_SystemInfo.txt
+Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | ConvertTo-Html| Out-File C:\$computerName`_SystemInfo_RunningProcesses.html
 format
 Write-Output "List of Services on the System (Running and Stopped)" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
@@ -73,8 +73,8 @@ format
 Write-Output "List of Installed Software" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 #Get-WmiObject -class win32_Product | Out-File -Append C:\$computerName_SystemInfo.txt
-Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|Out-File -Append C:\$computerName`_SystemInfo.txt
-Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |Out-File -Append C:\$computerName`_SystemInfo.txt
+Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|ConvertTo-Html | Out-File C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html
+Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |ConvertTo-Html| Out-File C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html
 #Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "NTP Settings" | Out-File -Append C:\$computerName`_SystemInfo.txt
@@ -105,3 +105,4 @@ format
 Write-Output "Checking Unknown Processes Running on the Sytem" | Out-File -Append C:\$computerName`_SystemInfo.txt
 checkProcessVendor | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+Compress-Archive -LiteralPath C:\$computerName`_SystemInfo.txt,C:\$computerName`_SystemInfo_RunningProcesses.html,C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html,C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html -DestinationPath C:\$computerName`_SystemInfo.zip -Force
