@@ -2,9 +2,9 @@
 
 <#
 
-TODO1: Need lot of cleanup for running processes and installed sodtware onthe system. 
-TODO2: Add more scirpt to fetch starup processes during bootup
-TODO3: (In Progress) Need to add fucntionality to spit output in clean format maybe in HTML files and then zip them to a folder (Research more on Compress-Archive)
+TODO1: (DONE)Need lot of cleanup for running processes and installed sodtware onthe system. 
+TODO2: (DONE)Add more scirpt to fetch starup processes during bootup
+TODO3: (DONE) Need to add fucntionality to spit output in clean format maybe in HTML files and then zip them to a folder (Research more on Compress-Archive)
 TODO4: Need to add Remoting fucntionality to the script to gather data from systems in the network
 
 #>
