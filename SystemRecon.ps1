@@ -119,4 +119,3 @@ checkProcessVendor | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Compress-Archive -LiteralPath C:\table.css,C:\$computerName`_SystemInfo.txt,C:\$computerName`_SystemInfo_RunningProcesses.html,C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html,C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html -DestinationPath C:\$computerName`_SystemInfo.zip -Force
 
-Write-Output "Sunny is Good" |ConvertTo-Html -CssUri C:\style.css | Out-File C:\test.html
