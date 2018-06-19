@@ -110,16 +110,19 @@ else
     Write-Output "The host failed to reach Google.ca" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
 format
-Write-Output "Checking Open Ports on the System"|Out-File -Append C:\$computerName`_SystemInfo.txt
+Write-Output "List of Open Ports on the System"|Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,State | Sort-Object LocalPort -Descending | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Write-Output "Checking Unknown Processes Running on the Sytem" | Out-File -Append C:\$computerName`_SystemInfo.txt
+Write-Output "List of Unknown Processes Running on the Sytem" | Out-File -Append C:\$computerName`_SystemInfo.txt
 checkProcessVendor | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Write-Output "Checking Local Account on System"|Out-File -Append C:\$computerName`_SystemInfo.txt
+Write-Output "List of Local Account on System"|Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-LocalUser| Select-Object Name,Enabled,PasswordExpires,PasswordLastSet,PasswordRequired,AccountExpires | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+Write-Output "List of Startup Programs"|Out-File -Append C:\$computerName`_SystemInfo.txt
+format
+Get-CimInstance -class Win32_StartupCommand | Out-File -Append C:\$computerName`_SystemInfo.txt
 Compress-Archive -LiteralPath C:\table.css,C:\$computerName`_SystemInfo.txt,C:\$computerName`_SystemInfo_RunningProcesses.html,C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html,C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html -DestinationPath C:\$computerName`_SystemInfo.zip -Force
 
