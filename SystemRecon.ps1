@@ -1,4 +1,5 @@
 ﻿#Author: @browninfosecguy
+#Requires -RunAsAdministrator
 
 <#
 
