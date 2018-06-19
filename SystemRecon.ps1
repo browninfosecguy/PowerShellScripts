@@ -9,6 +9,18 @@ TODO4: Need to add Remoting fucntionality to the script to gather data from syst
 
 #>
 
+$cssTable="h1, h5, th { text-align: center; }
+table { margin: auto; font-family: Segoe UI; box-shadow: 10px 10px 5px #888; border: thin ridge grey; }
+th { background: #0046c3; color: #fff; max-width: 400px; padding: 5px 10px; }
+td { font-size: 11px; padding: 5px 20px; color: #000; }
+tr { background: #b8d1f3; }
+tr:nth-child(even) { background: #dae5f4; }
+tr:nth-child(odd) { background: #b8d1f3; }"
+
+
+$cssTable | Out-File "C:\table.css"
+
+
 function format{
         Write-Output "*************************************************************" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
@@ -60,7 +72,7 @@ Get-ComputerInfo | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "Processes Running on the System" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | ConvertTo-Html| Out-File C:\$computerName`_SystemInfo_RunningProcesses.html
+Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | ConvertTo-Html -CssUri table.css| Out-File C:\$computerName`_SystemInfo_RunningProcesses.html
 format
 Write-Output "List of Services on the System (Running and Stopped)" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
@@ -73,8 +85,8 @@ format
 Write-Output "List of Installed Software" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 #Get-WmiObject -class win32_Product | Out-File -Append C:\$computerName_SystemInfo.txt
-Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|ConvertTo-Html | Out-File C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html
-Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |ConvertTo-Html| Out-File C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html
+Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|ConvertTo-Html -CssUri table.css | Out-File C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html
+Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |ConvertTo-Html -CssUri table.css| Out-File C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html
 #Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Write-Output "NTP Settings" | Out-File -Append C:\$computerName`_SystemInfo.txt
@@ -105,4 +117,6 @@ format
 Write-Output "Checking Unknown Processes Running on the Sytem" | Out-File -Append C:\$computerName`_SystemInfo.txt
 checkProcessVendor | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
-Compress-Archive -LiteralPath C:\$computerName`_SystemInfo.txt,C:\$computerName`_SystemInfo_RunningProcesses.html,C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html,C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html -DestinationPath C:\$computerName`_SystemInfo.zip -Force
+Compress-Archive -LiteralPath C:\table.css,C:\$computerName`_SystemInfo.txt,C:\$computerName`_SystemInfo_RunningProcesses.html,C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html,C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html -DestinationPath C:\$computerName`_SystemInfo.zip -Force
+
+Write-Output "Sunny is Good" |ConvertTo-Html -CssUri C:\style.css | Out-File C:\test.html
