@@ -10,6 +10,8 @@ TODO4: Need to add Remoting fucntionality to the script to gather data from syst
 
 #>
 
+#CSS File for HTML files
+
 $cssTable="h1, h5, th { text-align: center; }
 table { margin: auto; font-family: Segoe UI; box-shadow: 10px 10px 5px #888; border: thin ridge grey; }
 th { background: #0046c3; color: #fff; max-width: 400px; padding: 5px 10px; }
@@ -51,42 +53,63 @@ function checkProcessVendor{
 
 }
 
+
+#Fetch Computer Name
+
 $computerName = (Get-WmiObject -class Win32_computerSystem).Name.ToString()
+
+#Create the System Info File
 
 Write-Output "*************************************************************" | Out-File C:\$computerName`_SystemInfo.txt
 Write-Output "Name of the System" | Out-File -Append C:\$computerName`_SystemInfo.txt 
 format
 Get-WmiObject -class Win32_computerSystem | Select-Object Name | Out-File -Append C:\$computerName`_SystemInfo.txt 
 format
+
+#Fetch Date and Time
 Write-Output "Date and Time Zone" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-Date | Out-File -Append C:\$computerName`_SystemInfo.txt
 Get-TimeZone | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+
 #Get Network Adapter Information
 Write-Output "IP Configuration" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-NetIPConfiguration | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+
+#Get System Information
 Write-Output "System Information" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-ComputerInfo | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+
 #Get a list of Running Processes
 Write-Output "Processes Running on the System" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-Process | Select-Object Name,Path,ProductVersion,Description, Company | ConvertTo-Html -CssUri table.css| Out-File C:\$computerName`_SystemInfo_RunningProcesses.html
 format
+
+
 #Get a list of Services
 Write-Output "List of Services on the System (Running and Stopped)" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-Service | Select-Object DisplayName,Status | Sort-Object Status -Descending | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+
+
 #Get a list of Patches Applied
 Write-Output "List of Patches Applied to the Server" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-hotFix | Sort-Object InstalledOn| Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+#Get List of Installed Programs
 Write-Output "List of Installed Software" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 #Get-WmiObject -class win32_Product | Out-File -Append C:\$computerName_SystemInfo.txt
@@ -94,15 +117,21 @@ Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uni
 Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |ConvertTo-Html -CssUri table.css| Out-File C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html
 #Get-CimInstance -class Win32_Product| Select-Object Name,Vendor,Version | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+
 #Get NTP server setting
 Write-Output "NTP Settings" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-ItemProperty -path Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters|Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+#Get Run Key Value from Registry
 Write-Output "Run Key" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+#Test for Internet Connectivity
 Write-Output "Testing for External Internet Connectivity" | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 $return = testInternet
@@ -116,19 +145,28 @@ else
     Write-Output "The host failed to reach Google.ca" | Out-File -Append C:\$computerName`_SystemInfo.txt
 }
 format
+
+
+
 #Get a List of Ports Listening
 Write-Output "List of Open Ports on the System"|Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,State | Sort-Object LocalPort -Descending | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+#Check for Unknown Processes Running on System
 Write-Output "List of Unknown Processes Running on the Sytem" | Out-File -Append C:\$computerName`_SystemInfo.txt
 checkProcessVendor | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+
 #Get a list of Local Accounts
 Write-Output "List of Local Account on System"|Out-File -Append C:\$computerName`_SystemInfo.txt
 format
 Get-LocalUser| Select-Object Name,Enabled,PasswordExpires,PasswordLastSet,PasswordRequired,AccountExpires | Out-File -Append C:\$computerName`_SystemInfo.txt
 format
+
+
 #Get a list of Startup Programs
 Write-Output "List of Startup Programs"|Out-File -Append C:\$computerName`_SystemInfo.txt
 format
@@ -136,7 +174,7 @@ Get-CimInstance -class Win32_StartupCommand | Out-File -Append C:\$computerName`
 
 
 
-#Compress Everything and put files in a ZIP Folder.
+#Compress Everything and put files in a ZIP Folder and remove the files created on C:\.
 Compress-Archive -LiteralPath C:\table.css,C:\$computerName`_SystemInfo.txt,C:\$computerName`_SystemInfo_RunningProcesses.html,C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html,C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html -DestinationPath C:\$computerName`_SystemInfo.zip -Force
 
 Remove-Item -LiteralPath C:\table.css,C:\$computerName`_SystemInfo.txt,C:\$computerName`_SystemInfo_RunningProcesses.html,C:\$computerName`_SystemInfo_InstalledPrograms32Bit.html,C:\$computerName`_SystemInfo_InstalledPrograms64Bit.html
