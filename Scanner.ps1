@@ -1,1 +1,1 @@
-﻿0..65535 | foreach-object{Test-NetConnection localhost -Port $_}
+﻿1..65535 | foreach-object{Test-NetConnection localhost -Port $_}
