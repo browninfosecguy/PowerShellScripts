@@ -85,6 +85,8 @@ Write-Host '17 - Installed Programs on a Machine'
 
 Write-Host '18 - Get a list of Local user account from a Machine'
 
+Write-Host '19 - Generate the GPO Configured'
+
 
 Write-Host '0  - Quit' -ForegroundColor Red
 
@@ -656,6 +658,16 @@ switch ($input)
     }
     Read-Host 'Press 0 and Enter to continue'
 
+}
+
+19{
+    Write-Host "Following Menu Item will Gnerate an HTML output of Group Policy Configured on the Domain" -ForegroundColor Yellow
+
+    Get-GPOReport -All -Domain $env:userdnsdomain -Server $env:COMPUTERNAME -ReportType Html -Path "C:\GPOReportsAll.html"
+
+    Write-Host "Results are stored at C:\GPOReportsAll.html"
+
+    Read-Host 'Press Enter to Continue'
 }
 
 }
