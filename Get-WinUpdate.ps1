@@ -21,16 +21,15 @@ foreach($name in $computername)
         
     }
     catch {
-
-        Write-Host "Cannot connect with $name"
+        
+        Write-Host "Could not connect with $name"
         
     }
     finally{
         Remove-PSSession -Session $psession
-    }
-    
-
-    
+    }   
 
 }
+
+
 Stop-Transcript
