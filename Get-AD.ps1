@@ -373,29 +373,15 @@ switch ($input)
 
         $scopesi=Read-Host 'Select'
 
-        
-
         $header='Host Name','OS','Version','Manufacturer','Configuration','Build Type','Registered Owner','Registered Organization','Product ID','Install Date','Boot Time','System Manufacturer','Model','Type','Processor','Bios','Windows Directory','System Directory','Boot Device','Language','Keyboard','Time Zone','Total Physical Memory','Available Physical Memory','Virtual Memory','Virtual Memory Available','Virtual Memory in Use','Page File','Domain','Logon Server','Hotfix','Network Card','Hyper-V'
-
-
-
-
 
         switch ($scopesi) {
 
-
-
         1 {
-
-            
 
             & "$env:windir\system32\systeminfo.exe" /FO CSV | Select-Object -Skip 1 | ConvertFrom-Csv -Header $header | Out-Host
 
-            
-
           }
-
-
 
         2 {
 
@@ -412,8 +398,6 @@ switch ($input)
             Invoke-Command -ComputerName $comps -Credential $cred {systeminfo /FO CSV | Select-Object -Skip 1} -ErrorAction SilentlyContinue | ConvertFrom-Csv -Header $header | Out-Host
 
             }
-
-
 
         3 { 
         
