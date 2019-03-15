@@ -14,11 +14,23 @@ $computername = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
 foreach($name in $computername)
 {
 
-    $psession = New-PSSession -ComputerName $name -Credential $cred
+    try {
+        $psession = New-PSSession -ComputerName $name -Credential $cred -ErrorAction Stop
 
-    Invoke-Command -Session $psession -ScriptBlock {(Get-HotFix|Sort-Object InstalledOn)[-1]}
+        Invoke-Command -Session $psession -ScriptBlock {(Get-HotFix|Sort-Object InstalledOn)[-1]} -ErrorAction Stop
+        
+    }
+    catch {
 
-    Remove-PSSession -Session $psession
+        Write-Host "Cannot connect with $name"
+        
+    }
+    finally{
+        Remove-PSSession -Session $psession
+    }
+    
+
+    
 
 }
 Stop-Transcript
