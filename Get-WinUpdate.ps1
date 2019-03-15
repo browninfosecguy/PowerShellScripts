@@ -5,6 +5,7 @@ Following script can be used to Check the latest update applied to systems acros
 This script is best when you run on a DC
 
 #>
+Start-Transcript -Path "C:\WindowsUpdate_Evidence.txt"
 
 $cred = Get-Credential -Message "Please provide DC Admin Credentials"
 
@@ -20,3 +21,4 @@ foreach($name in $computername)
     Remove-PSSession -Session $psession
 
 }
+Stop-Transcript
