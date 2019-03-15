@@ -1,32 +1,27 @@
-﻿function Get-AD {
-
-<#
+﻿<#
 
     Major part of this script is re use from Patrick Gruenauer work.
     Here is the link to his excellent work https://sid-500.com/2018/05/22/active-directory-domain-services-section-version-1-1/
 
 
 #>
+$cred=Get-Credential -Message 'Enter Username and Password of a Member of the Domain Admins Group'
 
+function Get-AD {
 
+    $line='========================================================='
 
-$line='========================================================='
+    $line2='________________________________________________________'
 
-$line2='________________________________________________________'
+    if (Get-Module -ListAvailable -Name ActiveDirectory) {
 
+        Import-Module ActiveDirectory
 
-
-
-
-if (Get-Module -ListAvailable -Name ActiveDirectory) {
-
-    Import-Module ActiveDirectory
-
-} else {
+    } else {
 
     ''
 
-    Write-Host "Operation aborted. No Active Directory Module found. Run this tool on a Domain Controller." -ForegroundColor Red
+        Write-Host "Operation aborted. No Active Directory Module found. Run this tool on a Domain Controller." -ForegroundColor Red
 
     ''
 
@@ -37,7 +32,6 @@ if (Get-Module -ListAvailable -Name ActiveDirectory) {
 
 
 cls
-
 
 
 do {
@@ -90,15 +84,9 @@ Write-Host '19 - Generate the GPO Configured'
 
 Write-Host '0  - Quit' -ForegroundColor Red
 
-
-
 Write-Host ''
 
-
-
 $input=Read-Host 'Select'
-
-
 
 switch ($input) 
 
@@ -113,15 +101,13 @@ switch ($input)
 
     $forest+=New-Object -TypeName PSObject -Property ([ordered]@{
 
+        'Root Domain'=$get.RootDomain
 
+        'Forest Mode'=$get.ForestMode
 
-    'Root Domain'=$get.RootDomain
+        'Domains'=$get.Domains -join ','
 
-    'Forest Mode'=$get.ForestMode
-
-    'Domains'=$get.Domains -join ','
-
-    'Sites'=$get.Sites -join ','
+        'Sites'=$get.Sites -join ','
 
     })
 
@@ -423,43 +409,21 @@ switch ($input)
 
             $comp=$comps.Split(',')
 
-
-
-            $cred=Get-Credential -Message 'Enter Username and Password of a Member of the Domain Admins Group'
-
             Invoke-Command -ComputerName $comps -Credential $cred {systeminfo /FO CSV | Select-Object -Skip 1} -ErrorAction SilentlyContinue | ConvertFrom-Csv -Header $header | Out-Host
-
-            
-
-
 
             }
 
 
 
         3 { 
-
-            $cred=Get-Credential -Message 'Enter Username and Password of a Member of the Domain Admins Group'
-
-
-
+        
             Invoke-Command -ComputerName (Get-ADComputer -Filter {operatingsystem -like '*server*'}).Name -Credential $cred {systeminfo /FO CSV | Select-Object -Skip 1} -ErrorAction SilentlyContinue | ConvertFrom-Csv -Header $header | Out-Host
-
-            
 
             }
 
-
-
         4 {
 
-            $cred=Get-Credential -Message 'Enter Username and Password of a Member of the Domain Admins Group'
-
-
-
             Invoke-Command -ComputerName (Get-ADComputer -Filter *).Name -Credential $cred {systeminfo /FO CSV | Select-Object -Skip 1} -ErrorAction SilentlyContinue | ConvertFrom-Csv -Header $header | Out-Host
-
-            
 
             }
 
@@ -549,9 +513,11 @@ switch ($input)
 
    Write-Host "This menu item get the most recent hotfix" -ForegroundColor Green
 
-   $ComputerName = Read-Host "Enter Computer Name" -ForegroundColor Yellow
+   $ComputerName = Read-Host "Enter Computer Name"
 
-   Invoke-command -ComputerName $ComputerName {(Get-HotFix | sort installedon)[-1]}
+   $csession = New-PSSession -ComputerName $ComputerName -Credential $cred
+
+   Invoke-command  -Session $csession -ScriptBlock {(Get-HotFix | sort installedon)[-1]}
 
    Read-Host 'Press 0 and Enter to continue'
 
@@ -563,20 +529,22 @@ switch ($input)
 
    $ComputerName = Read-Host "Enter Computer Name" 
 
+   $csession = New-PSSession -ComputerName $ComputerName -Credential $cred
+
    $code = $false
 
-    $version = Invoke-Command -ComputerName $ComputerName -ScriptBlock {$PSVersionTable.PSVersion.Major}
+    $version = Invoke-Command -Session $csession -ScriptBlock {$PSVersionTable.PSVersion.Major}
 
     if($version -lt 3)
     {
-        Invoke-Command -ComputerName $ComputerName -ScriptBlock {ping -n 2 -4 8.8.8.8}
+        Invoke-Command -Session $csession -ScriptBlock {ping -n 2 -4 8.8.8.8}
     }
     else
     {
 
     try{
 
-        $code = Invoke-Command -ComputerName $ComputerName -ScriptBlock {(Test-NetConnection -ComputerName 8.8.8.8).PingSucceeded}
+        $code = Invoke-Command -Session $csession -ScriptBlock {(Test-NetConnection -ComputerName 8.8.8.8).PingSucceeded}
         
         }
     catch{
@@ -592,7 +560,9 @@ switch ($input)
         }
         }
 
-   Read-Host 'Press 0 and Enter to continue'
+        Remove-PSSession -Session $csession
+        
+        Read-Host 'Press 0 and Enter to continue'
 
 
 }
@@ -603,17 +573,22 @@ switch ($input)
 
     $ComputerName = Read-Host "Enter Computer Name"
 
-    $version = Invoke-Command -ComputerName $ComputerName -ScriptBlock {$PSVersionTable.PSVersion.Major}
+    $csession = New-PSSession -ComputerName $ComputerName -Credential $cred
+    
+    $version = Invoke-Command -Session $csession -ScriptBlock {$PSVersionTable.PSVersion.Major}
 
     if($version -lt 3)
     {
-        Invoke-Command -ComputerName $ComputerName -ScriptBlock {netstat -abno}
+        Invoke-Command -Session $csession -ScriptBlock {netstat -abno}
     }
     else
     {
 
-        Invoke-Command -ComputerName $ComputerName -ScriptBlock {Get-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,State | Sort-Object LocalPort -Descending}
+        Invoke-Command -Session $csession -ScriptBlock {Get-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,State | Sort-Object LocalPort -Descending|Format-Table}
     }
+
+    Remove-PSSession -Session $csession
+
     Read-Host 'Press 0 and Enter to continue'
 
 }
@@ -624,17 +599,22 @@ switch ($input)
 
     $ComputerName = Read-Host "Enter Computer Name"
 
-    $version = Invoke-Command -ComputerName $ComputerName -ScriptBlock {$PSVersionTable.PSVersion.Major}
+    $csession = New-PSSession -ComputerName $ComputerName -Credential $cred
+
+    $version = Invoke-Command -Session $csession -ScriptBlock {$PSVersionTable.PSVersion.Major}
 
     if($version -lt 3)
     {
-        Invoke-Command -ComputerName $ComputerName -ScriptBlock {Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate }
+        Invoke-Command -Session $csession -ScriptBlock {Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate }
     }
     else
     {
 
-        Invoke-Command -ComputerName $ComputerName -ScriptBlock {Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate}
+        Invoke-Command -Session $csession -ScriptBlock {Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate}
     }
+
+    Remove-PSSession -Session $csession
+
     Read-Host 'Press 0 and Enter to continue'
 
 }
@@ -645,23 +625,30 @@ switch ($input)
 
     $ComputerName = Read-Host "Enter Computer Name"
 
-    $version = Invoke-Command -ComputerName $ComputerName -ScriptBlock {$PSVersionTable.PSVersion.Major}
+    $csession = New-PSSession -ComputerName $ComputerName -Credential $cred
+
+    $version = Invoke-Command -Session $csession -ScriptBlock {$PSVersionTable.PSVersion.Major}
 
     if($version -lt 3)
     {
-        Invoke-Command -ComputerName $ComputerName -ScriptBlock {net user}
+        Invoke-Command --Session $csession -ScriptBlock {net user}
     }
     else
     {
-
-        Invoke-Command -ComputerName $ComputerName -ScriptBlock {Get-LocalUser| Select-Object Name,Enabled,PasswordExpires,PasswordLastSet,PasswordRequired,AccountExpires}
+        
+        Invoke-Command -Session $csession -ScriptBlock {Get-LocalUser| Select-Object Name,Enabled,PasswordExpires,PasswordLastSet,PasswordRequired,AccountExpires} -ErrorAction SilentlyContinue
     }
+
+    Remove-PSSession -Session $csession
+
     Read-Host 'Press 0 and Enter to continue'
 
 }
 
 19{
     Write-Host "Following Menu Item will Gnerate an HTML output of Group Policy Configured on the Domain" -ForegroundColor Yellow
+
+    Invoke-Command -ComputerName (Get-ADComputer -Filter *).Name -Credential $cred {systeminfo /FO CSV | Select-Object -Skip 1} -ErrorAction SilentlyContinue | ConvertFrom-Csv -Header $header | Out-Host
 
     Get-GPOReport -All -Domain $env:userdnsdomain -Server $env:COMPUTERNAME -ReportType Html -Path "C:\GPOReportsAll.html"
 
