@@ -81,6 +81,9 @@ Write-Host '18 - Get a list of Local user account from a Machine'
 
 Write-Host '19 - Generate the GPO Configured'
 
+Write-Host '20 - Display the last time update were installed on computer in the domain'
+
+Write-Host '21 - Generate the list of local user account on each computer in the domain'
 
 Write-Host '0  - Quit' -ForegroundColor Red
 
@@ -640,7 +643,67 @@ switch ($input)
 
     Read-Host 'Press Enter to Continue'
 }
+20{
+    $computername = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
 
+    foreach($name in $computername)
+    {
+
+        try {
+            $psession = New-PSSession -ComputerName $name -Credential $cred -ErrorAction Stop
+
+            Invoke-Command -Session $psession -ScriptBlock {(Get-HotFix|Sort-Object InstalledOn)[-1]} -ErrorAction Stop
+        
+        }
+        catch {
+        
+            Write-Host "Could not connect with $name"
+        
+        }
+        finally{
+            Remove-PSSession -Session $psession
+        }  
+    } 
+    Read-Host 'Press Enter to Continue'
+
+
+}
+21{
+    
+    $computername = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+
+    foreach($name in $computername)
+    {
+
+        try {
+
+            $psession = New-PSSession -ComputerName $name -Credential $cred -ErrorAction Stop
+
+            $version = Invoke-Command -Session $psession -ScriptBlock {$PSVersionTable.PSVersion.Major}
+
+            if($version -lt 3)
+            {
+                Invoke-Command -Session $psession -ScriptBlock {net user}
+            }
+            else
+            {
+        
+                Invoke-Command -Session $psession -ScriptBlock {Get-LocalUser|Where-Object {$_.Enabled}| Select-Object Name,Enabled,PasswordExpires,PasswordLastSet,PasswordRequired,AccountExpires|Format-Table} -ErrorAction SilentlyContinue
+            }
+        
+        }
+        catch {
+        
+            Write-Host "Could not connect with $name"
+        
+        }
+        finally{
+            Remove-PSSession -Session $psession
+        }  
+    } 
+    Read-Host 'Press Enter to Continue'
+    
+}
 }
 
 }
