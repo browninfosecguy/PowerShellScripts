@@ -670,7 +670,9 @@ switch ($input)
 }
 21{
     
+    # Get-ADComputer -Filter * | where {!($_.DistinguishedName -like '*OU=Domain*')} This can be used to exclude DC
     $computername = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+
 
     foreach($name in $computername)
     {
