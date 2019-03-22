@@ -84,11 +84,11 @@ Write-Host '18 - Get a list of Local user account from a Machine'
 
 Write-Host '19 - Generate the GPO Configured'
 
-Write-Host '20 - Display the last time update were installed on computer in the domain'
+Write-Host '20 - Windows Update: Generate list of last update applied on computer in the domain'
 
 Write-Host '21 - Generate the list of local user account on each computer in the domain'
 
-Write-Host '22 - Test the AV running on a system'
+Write-Host '22 - EICAR test file: Script will create test file named AVTest.txt in home directory'
 
 Write-Host '23 - FIM Test: A file will be created at DRIVE:\Windows\system32 named FIMTest.txt'
 
@@ -668,7 +668,10 @@ switch ($input)
         
         }
         finally{
-            Remove-PSSession -Session $psession
+            try{
+                Remove-PSSession -Session $psession
+            }
+            catch{}
         }  
     } 
     Read-Host 'Press Enter to Continue'
@@ -706,8 +709,10 @@ switch ($input)
             Write-Host "Could not connect with $name"
         
         }
-        finally{
+        finally{try{
             Remove-PSSession -Session $psession
+        }
+        catch{}
         }  
     } 
     Read-Host 'Press Enter to Continue'
@@ -727,8 +732,10 @@ switch ($input)
         Write-Host "Could not connect with $name"
         
     }
-    finally{
+    finally{try{
         Remove-PSSession -Session $psession
+    }
+    catch{}
     } 
     Read-Host 'Press Enter to Continue'
 }
@@ -751,7 +758,10 @@ switch ($input)
     
     }
     finally{
-        Remove-PSSession -Session $psession
+        try{
+            Remove-PSSession -Session $psession
+        }
+        catch{}
     }
     Read-Host 'Press Enter to Continue'   
 }
