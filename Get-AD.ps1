@@ -90,6 +90,8 @@ Write-Host '21 - Generate the list of local user account on each computer in the
 
 Write-Host '22 - Test the AV running on a system'
 
+Write-Host '23 - FIM Test: A file will be created at DRIVE:\Windows\system32 named FIMTest.txt'
+
 Write-Host '0  - Quit' -ForegroundColor Red
 
 Write-Host ''
@@ -729,6 +731,29 @@ switch ($input)
         Remove-PSSession -Session $psession
     } 
     Read-Host 'Press Enter to Continue'
+}
+23{
+    $sys32 = [System.Environment]::SystemDirectory
+
+    $cname = Read-Host "Enter the name of computer system to test"
+
+    try {
+        $psession = New-PSSession -ComputerName $cname -Credential $cred -ErrorAction Stop
+
+        Invoke-Command -Session $psession -ScriptBlock {param($var) Out-File -FilePath "$var\FIMTest.txt"} -ArgumentList $sys32 -ErrorAction Stop
+
+        Write-Host "$sys32\FIMTest.txt was created on "(Get-Date)
+        
+    }
+    catch {
+    
+        Write-Host "Could not connect with $name"
+    
+    }
+    finally{
+        Remove-PSSession -Session $psession
+    }
+    Read-Host 'Press Enter to Continue'   
 }
 }
 
