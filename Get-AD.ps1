@@ -7,6 +7,9 @@
 #>
 $cred=Get-Credential -Message 'Enter Username and Password of a Member of the Domain Admins Group'
 
+$avTest ='X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
+
+
 function Get-AD {
 
     $line='========================================================='
@@ -84,6 +87,8 @@ Write-Host '19 - Generate the GPO Configured'
 Write-Host '20 - Display the last time update were installed on computer in the domain'
 
 Write-Host '21 - Generate the list of local user account on each computer in the domain'
+
+Write-Host '22 - Test the AV running on a system'
 
 Write-Host '0  - Quit' -ForegroundColor Red
 
@@ -705,6 +710,25 @@ switch ($input)
     } 
     Read-Host 'Press Enter to Continue'
     
+}
+22{
+    $cname = Read-Host "Enter the name of computer system to test"
+
+    try {
+        $psession = New-PSSession -ComputerName $cname -Credential $cred -ErrorAction Stop
+    
+        Invoke-Command -Session $psession -ScriptBlock { param ($var) Out-File  -FilePath "$env:HOMEPATH\AVTest.txt" -InputObject $var -Encoding ASCII} -ArgumentList $avTest -ErrorAction Stop
+        
+    }
+    catch {
+        
+        Write-Host "Could not connect with $name"
+        
+    }
+    finally{
+        Remove-PSSession -Session $psession
+    } 
+    Read-Host 'Press Enter to Continue'
 }
 }
 
