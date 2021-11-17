@@ -1,0 +1,4 @@
+<Configuration>
+<VGpu>Default</VGpu>
+<Networking>Disabled</Networking>
+</Configuration>
